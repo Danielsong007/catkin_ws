@@ -1,4 +1,4 @@
-- !!Note: create an empty Repo from website firstly, and then clone it. (or you cannot synchronize main branch.)
+- !!Note: create an empty Repo from website firstly, and then clone it to local folder. (or you cannot synchronize main branch.)
 - Install git
     - sudo apt-get install git
     - git config --global user.name "user_name"
