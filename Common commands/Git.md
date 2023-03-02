@@ -16,4 +16,5 @@
     - git branch checkout (local branch name) // change local branch
     - git push origin (remote branch name) // push local branch to remote
     - git push origin :(remote branch name) //delete remote branch
+    - git branch -M (new name) // change name
 
