@@ -2,15 +2,19 @@
 
 import rospy
 from std_msgs.msg import String
+from beginner_tutorials.msg import Num
+import actionlib
+from control_msgs.msg import FollowJointTrajectoryAction
 
 def talker():
-    pub = rospy.Publisher('chatter', String, queue_size=10)
+    pub = rospy.Publisher('chatter', Num, queue_size=10)
     rospy.init_node('talker', anonymous=True)
     rate = rospy.Rate(10) # 10hz
+    Mymsg=Num()
     while not rospy.is_shutdown():
-        hello_str = "hello world %s" % rospy.get_time()
-        rospy.loginfo(hello_str)
-        pub.publish(hello_str)
+        Mymsg.num=[0,0,0,0,0,0]
+        rospy.loginfo(Mymsg.num)
+        pub.publish(Mymsg)
         rate.sleep()
 
 if __name__ == '__main__':

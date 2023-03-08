@@ -6,6 +6,7 @@ from sensor_msgs.msg import JointState
 from std_srvs.srv import SetBool, SetBoolResponse
 import serial
 import struct
+from beginner_tutorials.msg import Num
 # import thread
 
 
@@ -27,13 +28,13 @@ t = 0
 s_open = [0x01, 0x05, 0x00, 0x00, 0xFF, 0x00, 0x8C, 0x3A]
 s_close = [0x01, 0x05, 0x00, 0x00, 0x00, 0x00, 0xCD, 0xCA]
 
-ser = serial.Serial(
-        port='/dev/usb_0',
-        baudrate=9600,
-        parity=serial.PARITY_NONE,
-        stopbits=serial.STOPBITS_ONE,
-        bytesize=serial.EIGHTBITS
-        )
+# ser = serial.Serial(
+#         port='/dev/usb_0',
+#         baudrate=9600,
+#         parity=serial.PARITY_NONE,
+#         stopbits=serial.STOPBITS_ONE,
+#         bytesize=serial.EIGHTBITS
+#         )
 
 class curi_ros_driver(robot):
     def __init__(self, config_file = 'defualt.json'):
@@ -69,6 +70,7 @@ class curi_ros_driver(robot):
         self.is_braked_ = False
         self.pub = rospy.Publisher('robot/joint_states', JointState, queue_size=5)
         self.sub = rospy.Subscriber('CURIScript', String, self.recieve_script)
+        self.sub_new=rospy.Subscriber('chatter', Num, self.recieve_script_new)
         self.gripper_srv_ = rospy.Service('/gripper/run', SetBool, self._gripper_handle)
     #     thread.start_new_thread(command_thread,())
 
@@ -102,6 +104,21 @@ class curi_ros_driver(robot):
             resp.message = 'closeGripper'
             rospy.logwarn('closeVaccumGripper Drop')           
         return resp
+
+    def recieve_script_new(self, msg):
+        KKKK=[0,0,0,0,0,0]
+        rospy.loginfo(KKKK)
+
+        self.ControlSpace = CONTROL_SPACE.CONTROL_SPACE_JOINT
+        for i in range(self.JointSize):
+            self.JointCmdVel[i] = float(KKKK[i])
+            self.JointCmdMod[i] = CONTROL_MODE.CONTROL_MODE_VELOCITY
+            # self.JointCmdPos[i] = float(KKKK[i])
+            # self.JointCmdMod[i] = CONTROL_MODE.CONTROL_MODE_POSITION
+
+        self.Command = ROBOT_STATE.RUNNING_STATE_ONLINE
+        message = self.packRobotCommand()
+        self.socket_communication.send(message)
 
     def recieve_script(self, curi_script1):
         curi_script = curi_script1

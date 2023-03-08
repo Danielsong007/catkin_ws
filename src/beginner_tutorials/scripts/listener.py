@@ -2,18 +2,30 @@
 
 import rospy
 from std_msgs.msg import String
+from beginner_tutorials.msg import Num
+from control_msgs.msg import FollowJointTrajectoryAction
+import actionlib
 
-def callback(data):
-    rospy.loginfo(rospy.get_caller_id() + 'I heard %s', data.data)
+def on_goal(self, goal_handle):
+    points=goal_handle.get_goal().trajectory.points
+    traj = goal_handle.get_goal().trajectory
+    goal_handle.set_accepted()
+
+def on_cancel(self, goal_handle):
+    rospy.loginfo('it is cancelled')
+
+def TopicCallback(msg):
+    rospy.loginfo(msg.num[0])
 
 def listener():
 
     rospy.init_node('listener', anonymous=True)
 
-    rospy.Subscriber('chatter', String, callback)
+    rospy.Subscriber('chatter', Num, TopicCallback)
 
-    # spin() simply keeps python from exiting until this node is stopped
-    rospy.spin()
+    myserver = actionlib.ActionServer("robot/arm_controller/follow_joint_trajectory", FollowJointTrajectoryAction, on_goal, on_cancel, auto_start=False)
+
+    rospy.spin() # spin() simply keeps python from exiting until this node is stopped
 
 if __name__ == '__main__':
     listener()
