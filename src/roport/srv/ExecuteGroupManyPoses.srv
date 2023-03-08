@@ -1,0 +1,26 @@
+# Execute the pose goal for given planning group
+
+# Requests
+# group_name: The group providing the reference frame
+# goal_type: GLOBAL_BASE: pose wrt the global base frame (robot base)
+#            LOCAL_BASE: pose wrt the base frame transferred to current eef base position
+#            EEF: pose wrt the eef frame
+# goal: pose of the goal
+# tolerance [opt]: tolerance for considering the goal has been reached, default 0.01 m/rad
+# constraint: If 'r', 'p', or 'y' is given, the eef_frame should not rotate about itself along x-, y-, or z-axis.
+#             You can combine them like 'rp', 'ry', 'py', and 'rpy'. default ''
+
+std_msgs/Header header
+string group_name
+uint8 GLOBAL_BASE=0
+uint8 LOCAL_BASE=1
+uint8 EEF=2
+uint8 goal_type
+geometry_msgs/PoseArray goals
+float64 tolerance
+float64 eef_step
+string constraint
+---
+uint8 SUCCEEDED=0
+uint8 FAILED=1
+uint8 result_status

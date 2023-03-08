@@ -1,0 +1,132 @@
+<?xml version="1.0"?>
+<root main_tree_to_execute="BehaviorTree">
+    <!-- ////////// -->
+    <BehaviorTree ID="BehaviorTree">
+        <Sequence name="Robot Minimal Demo">
+            <Repeat num_cycles="1">
+                <Sequence>
+                    <Action ID="ExecuteGroupLinearJointStates" goal="0.9737, 1.4487, 2.0451, -0.3455, 0.0, 0.0" group_name="arm" name="pre middle left" service_name="execute_group_joint_states" tolerance="0.01"/>
+                </Sequence>
+            </Repeat>
+        </Sequence>
+    </BehaviorTree>
+    <!-- ////////// -->
+    <TreeNodesModel>
+        <Action ID="ConnectWaypoints">
+            <output_port name="connected_waypoints">PoseArray</output_port>
+            <input_port default="connect_waypoints" name="service_name"/>
+            <input_port name="waypoint1">Pose</input_port>
+            <input_port name="waypoint2">Pose</input_port>
+            <input_port name="waypoint3">Pose</input_port>
+            <input_port name="waypoint4">Pose</input_port>
+            <input_port name="waypoint5">Pose</input_port>
+        </Action>
+        <Action ID="ExecuteAddBox">
+            <input_port default="1" name="auto_subfix"/>
+            <input_port default="box" name="box_name"/>
+            <input_port default="{place_pose}" name="box_pose"/>
+            <input_port default="0.2 0.2 0.2" name="box_size"/>
+            <input_port default="arm" name="group_name"/>
+            <input_port default="1" name="is_absolute"/>
+            <input_port default="execute_add_box" name="service_name"/>
+        </Action>
+        <Action ID="ExecuteAddPlane">
+            <input_port default="arm" name="group_name"/>
+            <input_port default="ground" name="plane_name"/>
+            <input_port default="0 0 1" name="plane_normal"/>
+            <input_port default="0 0 0 0 0 0 1" name="plane_pose">Pose</input_port>
+            <input_port default="execute_add_plane" name="service_name"/>
+        </Action>
+        <Action ID="ExecuteAttachBox">
+            <input_port name="box_name"/>
+            <input_port name="box_pose"/>
+            <input_port name="box_size"/>
+            <input_port default="gripper" name="eef_group_name"/>
+            <input_port default="arm" name="group_name"/>
+            <input_port default="execute_attach_box" name="service_name"/>
+        </Action>
+        <Action ID="ExecuteDetachObject">
+            <input_port default="arm" name="group_name"/>
+            <input_port name="obj_name"/>
+            <input_port default="execute_detach_object" name="service_name"/>
+        </Action>
+        <Action ID="ExecuteGroupAngularJointStates">
+            <input_port default="0 0 0 0 0 0 0" name="goal"/>
+            <input_port default="panda_arm" name="group_name"/>
+            <input_port default="execute_group_joint_states" name="service_name"/>
+            <input_port default="0.01" name="tolerance"/>
+        </Action>
+        <Action ID="ExecuteGroupLinearJointStates">
+            <input_port default="0.04 0.04" name="goal"/>
+            <input_port default="hand" name="group_name"/>
+            <input_port default="execute_group_joint_states" name="service_name"/>
+            <input_port default="0.01" name="tolerance"/>
+        </Action>
+        <Action ID="ExecuteGroupManyPoses">
+            <input_port name="constraint">If 'r', 'p', or 'y' is given, the eef_frame should not rotate about itself along x-, y-, or z-axis. You can combine them like 'rp', 'ry', 'py', and 'rpy'. Default ''</input_port>
+            <input_port default="0.1" name="eef_step"/>
+            <input_port default="0" name="goal_type">0: Pose wrt the global base frame (robot base); 1: Pose wrt the base frame transferred to current eef base position; 2: pose wrt the eef frame</input_port>
+            <input_port default="0 0 0 0 0 0 1" name="goals">Goals for each waypoint to reach, seperate with ; </input_port>
+            <input_port default="arm" name="group_name">The group providing the reference frame</input_port>
+            <input_port default="execute_group_many_poses" name="service_name"/>
+            <input_port default="0.01" name="tolerance"/>
+        </Action>
+        <Action ID="ExecuteGroupPose">
+            <input_port name="constraint">If 'r', 'p', or 'y' is given, the eef_frame should not rotate about itself along x-, y-, or z-axis. You can combine them like 'rp', 'ry', 'py', and 'rpy'. Default ''</input_port>
+            <input_port default="0 0 0 0 0 0 1" name="goal"/>
+            <input_port default="0" name="goal_type">0: Pose wrt the global base frame (robot base); 1: Pose wrt the base frame transferred to current eef base position; 2: pose wrt the eef frame</input_port>
+            <input_port default="arm" name="group_name">The group providing the reference frame</input_port>
+            <input_port default="execute_group_pose" name="service_name"/>
+            <input_port default="0.01" name="tolerance"/>
+        </Action>
+        <Action ID="ExecuteGroupShift">
+            <input_port default="z" name="axis">Could be x y z roll pitch yaw</input_port>
+            <input_port default="0" name="goal"/>
+            <input_port default="arm" name="group_name"/>
+            <input_port default="0" name="is_absolute"/>
+            <input_port default="execute_group_shift" name="service_name"/>
+            <input_port default="0.01" name="tolerance"/>
+        </Action>
+        <Action ID="ExecutePlanning">
+            <input_port default="0" name="category">0 for large box, 1 for small box</input_port>
+            <output_port name="pick_pose">Pose</output_port>
+            <output_port name="place_obj_pose">Pose</output_port>
+            <output_port name="place_pose">Pose</output_port>
+            <input_port name="pose">Pose</input_port>
+            <output_port name="pre_pick_pose">Pose</output_port>
+            <output_port name="pre_place_pose">Pose</output_port>
+            <input_port default="execute_planning" name="service_name"/>
+        </Action>
+        <Action ID="ExecuteRemoveObject">
+            <input_port default="1" name="is_exact"/>
+            <input_port name="obj_name"/>
+            <input_port default="execute_remove_object" name="service_name"/>
+        </Action>
+        <Action ID="ExecuteSuction">
+            <input_port default="0" name="enable"/>
+            <input_port default="execute_suction" name="service_name"/>
+        </Action>
+        <Action ID="FetchDetectedInfo">
+            <output_port name="category">String, 0 for large box, 1 for small box</output_port>
+            <output_port name="pose">Pose</output_port>
+            <input_port default="fetch_detected_info" name="service_name"/>
+        </Action>
+        <Action ID="SenseObjectPose">
+            <output_port name="category">String, 0 for large box, 1 for small box</output_port>
+            <output_port name="pose">Pose</output_port>
+            <input_port default="sense_object_pose" name="service_name"/>
+        </Action>
+        <Action ID="StoreDetectedInfo">
+            <input_port name="category">String, 0 for large box, 1 for small box</input_port>
+            <input_port name="pose">Pose</input_port>
+            <input_port default="store_detected_info" name="service_name"/>
+        </Action>
+        <Action ID="TypeInPose">
+            <output_port name="pose_on_blackboard">Pose on blackboard</output_port>
+            <input_port default="type_in_pose" name="service_name"/>
+            <input_port default="0 0 0 0 0 0 1" name="type_in_pose">Pose to be typed in</input_port>
+        </Action>
+    </TreeNodesModel>
+    <!-- ////////// -->
+</root>
+

@@ -1,0 +1,9 @@
+std_msgs/Header header
+string group_name
+string plane_name
+geometry_msgs/Pose plane_pose
+geometry_msgs/Point plane_normal
+---
+uint8 SUCCEEDED=0
+uint8 FAILED=1
+uint8 result_status

@@ -1,0 +1,7 @@
+std_msgs/Header header
+string category
+geometry_msgs/Pose pose
+---
+uint8 SUCCEEDED=0
+uint8 FAILED=1
+uint8 result_status

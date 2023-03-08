@@ -1,0 +1,11 @@
+moveit_setup_assistant_config:
+  URDF:
+    package: robot_description
+    relative_path: robots/robot_arm.urdf.xacro
+    xacro_args: ""
+  SRDF:
+    relative_path: config/robot.srdf
+  CONFIG:
+    author_name: andylee
+    author_email: 1155135230@link.cuhk.edu.hk
+    generated_timestamp: 1611236244

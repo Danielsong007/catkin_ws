@@ -1,0 +1,161 @@
+<?xml version="1.0"?>
+<root main_tree_to_execute="BehaviorTree">
+    <!-- ////////// -->
+    <BehaviorTree ID="BehaviorTree">
+        <Sequence name="Robot Minimal Demo">
+            <Sequence name="add collisions">
+                <Action ID="ExecuteAddPlane" group_name="arm" name="Add groud to scene" plane_name="ground" plane_normal="0 0 1" plane_pose="0 0 0 0 0 0 1" service_name="execute_add_plane"/>
+                <Action ID="ExecuteAddBox" auto_subfix="1" box_name="left_wall" box_pose="2.76 1.2 1.35 0 0 0 1" box_size="5.0 0.001 2.7" group_name="arm" is_absolute="1" name="Add left wall" service_name="execute_add_box"/>
+                <Action ID="ExecuteAddBox" auto_subfix="1" box_name="right_wall" box_pose="2.76 -1.2 1.35 0 0 0 1" box_size="5.0 0.001 2.7" group_name="arm" is_absolute="1" name="Add right wall" service_name="execute_add_box"/>
+                <Action ID="ExecuteAddBox" auto_subfix="1" box_name="top_wall" box_pose="4 0 2.7 0 0 0 1" box_size="2 2.4 0.001" group_name="arm" is_absolute="1" name="Add top wall" service_name="execute_add_box"/>
+                <Action ID="ExecuteAddBox" auto_subfix="1" box_name="conveyor" box_pose="-1.341 0 0.25 0 0 0 1" box_size="2.56 0.56 0.5" group_name="arm" is_absolute="1" name="Add conveyor" service_name="execute_add_box"/>
+            </Sequence>
+            <Action ID="ExecuteAddBox" auto_subfix="0" box_name="boxsur" box_pose="0.901 0 1.35 0 0 0 1" box_size="0.001 2.4 2.7" group_name="arm" is_absolute="1" name="box_surface" service_name="execute_add_box"/>
+            <Repeat num_cycles="1">
+                <Sequence name="left">
+                    <Action ID="ExecuteGroupLinearJointStates" goal="0.0829 -1.7568 2.5506 0.7786 -1.5734 -0.0038" group_name="arm" name="pre middle left" service_name="execute_group_joint_states" tolerance="0.01"/>
+                    <Action ID="ExecuteRemoveObject" is_exact="1" name="remove boxes_surface" obj_name="boxsur" service_name="execute_remove_object"/>
+                    <Action ID="ExecuteGroupManyPoses" constraint="" eef_step="0.1" goal_type="0" goals="0.88 0.4994 0.5723 0.4979 0.5006 0.5000 0.5012" group_name="arm" name="pick" service_name="execute_group_many_poses" tolerance="0.01"/>
+                    <Action ID="ExecuteGroupShift" axis="z" goal="0.1" group_name="arm" is_absolute="0" name="lift up" service_name="execute_group_shift" tolerance="0.01"/>
+                    <Action ID="ExecuteGroupShift" axis="x" goal="-0.4" group_name="arm" is_absolute="0" name="pull out" service_name="execute_group_shift" tolerance="0.01"/>
+                    <Action ID="ExecuteGroupLinearJointStates" goal="0.7015 0.4237 1.7017 -0.0747 -0.0040 -0.0806" group_name="arm" name="post middle left" service_name="execute_group_joint_states" tolerance="0.01"/>
+                    <Action ID="ExecuteGroupLinearJointStates" goal="0.7005 1.8997 2.0341 0.8173 0.0009 -0.0041" group_name="arm" name="place" service_name="execute_group_joint_states" tolerance="0.01"/>
+                    <Action ID="ExecuteGroupLinearJointStates" goal="0.7015 0.4237 1.7017 -0.0747 -0.0040 -0.0806" group_name="arm" name="post middle left" service_name="execute_group_joint_states" tolerance="0.01"/>
+                    <Action ID="ExecuteAddBox" auto_subfix="0" box_name="boxsur" box_pose="0.901 0 1.35 0 0 0 1" box_size="0.001 2.4 2.7" group_name="arm" is_absolute="1" name="box_surface" service_name="execute_add_box"/>
+                </Sequence>
+            </Repeat>
+            <Repeat num_cycles="1">
+                <Sequence name="right">
+                    <Action ID="ExecuteGroupLinearJointStates" goal="0.0777 1.8904 -2.4741 -0.9875 1.5718 -0.0037" group_name="arm" name="pre middle right" service_name="execute_group_joint_states" tolerance="0.01"/>
+                    <Action ID="ExecuteRemoveObject" is_exact="1" obj_name="boxsur" service_name="execute_remove_object"/>
+                    <Action ID="ExecuteGroupManyPoses" constraint="" eef_step="0.1" goal_type="0" goals="0.88 -0.4455 0.5713 -0.5115 0.4876 -0.4901 0.5101" group_name="arm" name="pick" service_name="execute_group_many_poses" tolerance="0.01"/>
+                    <Action ID="ExecuteGroupShift" axis="z" goal="0.1" group_name="arm" is_absolute="0" name="lift up" service_name="execute_group_shift" tolerance="0.01"/>
+                    <Action ID="ExecuteGroupShift" axis="x" goal="-0.4" group_name="arm" is_absolute="0" name="pull out" service_name="execute_group_shift" tolerance="0.01"/>
+                    <Action ID="ExecuteGroupLinearJointStates" goal="0.7015 -0.4631 -1.6642 -1.0472 0.0081 -0.0615" group_name="arm" name="post middle left" service_name="execute_group_joint_states" tolerance="0.01"/>
+                    <Action ID="ExecuteGroupLinearJointStates" goal="0.7015 -1.8999 -2.0660 -0.7844 0.0080 -0.0615" group_name="arm" name="place left" service_name="execute_group_joint_states" tolerance="0.01"/>
+                    <Action ID="ExecuteGroupLinearJointStates" goal="0.7015 -0.4631 -1.6642 -1.0472 0.0081 -0.0615" group_name="arm" name="post middle left" service_name="execute_group_joint_states" tolerance="0.01"/>
+                    <Action ID="ExecuteAddBox" auto_subfix="0" box_name="boxsur" box_pose="0.901 0 1.35 0 0 0 1" box_size="0.001 2.4 2.7" group_name="arm" is_absolute="1" name="boxes_surface" service_name="execute_add_box"/>
+                </Sequence>
+            </Repeat>
+        </Sequence>
+    </BehaviorTree>
+    <!-- ////////// -->
+    <TreeNodesModel>
+        <Action ID="ConnectWaypoints">
+            <output_port name="connected_waypoints">PoseArray</output_port>
+            <input_port default="connect_waypoints" name="service_name"/>
+            <input_port name="waypoint1">Pose</input_port>
+            <input_port name="waypoint2">Pose</input_port>
+            <input_port name="waypoint3">Pose</input_port>
+            <input_port name="waypoint4">Pose</input_port>
+            <input_port name="waypoint5">Pose</input_port>
+        </Action>
+        <Action ID="ExecuteAddBox">
+            <input_port default="1" name="auto_subfix"/>
+            <input_port default="box" name="box_name"/>
+            <input_port default="{place_pose}" name="box_pose"/>
+            <input_port default="0.2 0.2 0.2" name="box_size"/>
+            <input_port default="arm" name="group_name"/>
+            <input_port default="1" name="is_absolute"/>
+            <input_port default="execute_add_box" name="service_name"/>
+        </Action>
+        <Action ID="ExecuteAddPlane">
+            <input_port default="arm" name="group_name"/>
+            <input_port default="ground" name="plane_name"/>
+            <input_port default="0 0 1" name="plane_normal"/>
+            <input_port default="0 0 0 0 0 0 1" name="plane_pose">Pose</input_port>
+            <input_port default="execute_add_plane" name="service_name"/>
+        </Action>
+        <Action ID="ExecuteAttachBox">
+            <input_port name="box_name"/>
+            <input_port name="box_pose"/>
+            <input_port name="box_size"/>
+            <input_port default="gripper" name="eef_group_name"/>
+            <input_port default="arm" name="group_name"/>
+            <input_port default="execute_attach_box" name="service_name"/>
+        </Action>
+        <Action ID="ExecuteDetachObject">
+            <input_port default="arm" name="group_name"/>
+            <input_port name="obj_name"/>
+            <input_port default="execute_detach_object" name="service_name"/>
+        </Action>
+        <Action ID="ExecuteGroupAngularJointStates">
+            <input_port default="0 0 0 0 0 0 0" name="goal"/>
+            <input_port default="panda_arm" name="group_name"/>
+            <input_port default="execute_group_joint_states" name="service_name"/>
+            <input_port default="0.01" name="tolerance"/>
+        </Action>
+        <Action ID="ExecuteGroupLinearJointStates">
+            <input_port default="0.04 0.04" name="goal"/>
+            <input_port default="hand" name="group_name"/>
+            <input_port default="execute_group_joint_states" name="service_name"/>
+            <input_port default="0.01" name="tolerance"/>
+        </Action>
+        <Action ID="ExecuteGroupManyPoses">
+            <input_port name="constraint">If 'r', 'p', or 'y' is given, the eef_frame should not rotate about itself along x-, y-, or z-axis. You can combine them like 'rp', 'ry', 'py', and 'rpy'. Default ''</input_port>
+            <input_port default="0.1" name="eef_step"/>
+            <input_port default="0" name="goal_type">0: Pose wrt the global base frame (robot base); 1: Pose wrt the base frame transferred to current eef base position; 2: pose wrt the eef frame</input_port>
+            <input_port default="0 0 0 0 0 0 1" name="goals">Goals for each waypoint to reach, seperate with ; </input_port>
+            <input_port default="arm" name="group_name">The group providing the reference frame</input_port>
+            <input_port default="execute_group_many_poses" name="service_name"/>
+            <input_port default="0.01" name="tolerance"/>
+        </Action>
+        <Action ID="ExecuteGroupPose">
+            <input_port name="constraint">If 'r', 'p', or 'y' is given, the eef_frame should not rotate about itself along x-, y-, or z-axis. You can combine them like 'rp', 'ry', 'py', and 'rpy'. Default ''</input_port>
+            <input_port default="0 0 0 0 0 0 1" name="goal"/>
+            <input_port default="0" name="goal_type">0: Pose wrt the global base frame (robot base); 1: Pose wrt the base frame transferred to current eef base position; 2: pose wrt the eef frame</input_port>
+            <input_port default="arm" name="group_name">The group providing the reference frame</input_port>
+            <input_port default="execute_group_pose" name="service_name"/>
+            <input_port default="0.01" name="tolerance"/>
+        </Action>
+        <Action ID="ExecuteGroupShift">
+            <input_port default="z" name="axis">Could be x y z roll pitch yaw</input_port>
+            <input_port default="0" name="goal"/>
+            <input_port default="arm" name="group_name"/>
+            <input_port default="0" name="is_absolute"/>
+            <input_port default="execute_group_shift" name="service_name"/>
+            <input_port default="0.01" name="tolerance"/>
+        </Action>
+        <Action ID="ExecutePlanning">
+            <input_port default="0" name="category">0 for large box, 1 for small box</input_port>
+            <output_port name="pick_pose">Pose</output_port>
+            <output_port name="place_obj_pose">Pose</output_port>
+            <output_port name="place_pose">Pose</output_port>
+            <input_port name="pose">Pose</input_port>
+            <output_port name="pre_pick_pose">Pose</output_port>
+            <output_port name="pre_place_pose">Pose</output_port>
+            <input_port default="execute_planning" name="service_name"/>
+        </Action>
+        <Action ID="ExecuteRemoveObject">
+            <input_port default="1" name="is_exact"/>
+            <input_port name="obj_name"/>
+            <input_port default="execute_remove_object" name="service_name"/>
+        </Action>
+        <Action ID="ExecuteSuction">
+            <input_port default="0" name="enable"/>
+            <input_port default="execute_suction" name="service_name"/>
+        </Action>
+        <Action ID="FetchDetectedInfo">
+            <output_port name="category">String, 0 for large box, 1 for small box</output_port>
+            <output_port name="pose">Pose</output_port>
+            <input_port default="fetch_detected_info" name="service_name"/>
+        </Action>
+        <Action ID="SenseObjectPose">
+            <output_port name="category">String, 0 for large box, 1 for small box</output_port>
+            <output_port name="pose">Pose</output_port>
+            <input_port default="sense_object_pose" name="service_name"/>
+        </Action>
+        <Action ID="StoreDetectedInfo">
+            <input_port name="category">String, 0 for large box, 1 for small box</input_port>
+            <input_port name="pose">Pose</input_port>
+            <input_port default="store_detected_info" name="service_name"/>
+        </Action>
+        <Action ID="TypeInPose">
+            <output_port name="pose_on_blackboard">Pose on blackboard</output_port>
+            <input_port default="type_in_pose" name="service_name"/>
+            <input_port default="0 0 0 0 0 0 1" name="type_in_pose">Pose to be typed in</input_port>
+        </Action>
+    </TreeNodesModel>
+    <!-- ////////// -->
+</root>
+

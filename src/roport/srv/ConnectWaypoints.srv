@@ -1,0 +1,11 @@
+std_msgs/Header header
+geometry_msgs/Pose waypoint1
+geometry_msgs/Pose waypoint2
+geometry_msgs/Pose waypoint3
+geometry_msgs/Pose waypoint4
+geometry_msgs/Pose waypoint5
+---
+uint8 SUCCEEDED=0
+uint8 FAILED=1
+uint8 result_status
+geometry_msgs/PoseArray connected_waypoints

@@ -1,0 +1,218 @@
+<?xml version="1.0" ?>
+<!-- This URDF was manually created by andylee at July 7th 2021 -->
+<robot name="robot">
+  <link name="robot_bottom"/>
+  <joint name="bottom_joint" type="fixed">
+    <origin rpy="0 0 0" xyz="0 0 0.070"/>
+    <parent link="robot_bottom"/>
+    <child link="robot_link0"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+  <!-- link0 -->
+  <link name="robot_link0">
+    <visual>
+      <geometry>
+        <mesh filename="package://robot_description/meshes/visual/link0.dae"/>
+      </geometry>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://robot_description/meshes/collision/link0.stl"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <mass value="165.7"/>
+      <inertia ixx="0.3" ixy="0.0" ixz="0.0" iyy="0.3" iyz="0.0" izz="0.3"/>
+    </inertial>
+  </link>
+  <!-- link1 -->
+  <link name="robot_link1">
+    <visual>
+      <geometry>
+        <mesh filename="package://robot_description/meshes/visual/link1.dae"/>
+      </geometry>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://robot_description/meshes/collision/link1.stl"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <mass value="7.92"/>
+      <inertia ixx="0.3" ixy="0.0" ixz="0.0" iyy="0.3" iyz="0.0" izz="0.3"/>
+    </inertial>
+  </link>
+  <!-- joint1 -->
+  <joint name="robot_joint1" type="prismatic">
+    <origin xyz="0.157 0 0.566" rpy="0 0 0" />
+    <parent link="robot_link0"/>
+    <child link="robot_link1"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="1222" lower="0.0" upper="2.15" velocity="0.2"/>
+  </joint>
+  <!-- link2 -->
+  <link name="robot_link2">
+    <visual>
+      <geometry>
+        <mesh filename="package://robot_description/meshes/visual/link2.dae"/>
+      </geometry>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://robot_description/meshes/collision/link2.stl"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <mass value="17.08"/>
+      <inertia ixx="0.3" ixy="0.0" ixz="0.0" iyy="0.3" iyz="0.0" izz="0.3"/>
+    </inertial>
+  </link>
+  <!-- joint2 -->
+  <joint name="robot_joint2" type="revolute">
+    <origin xyz="0 0 0.094" rpy="0 0 0" />
+    <parent link="robot_link1"/>
+    <child link="robot_link2"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="160" lower="-1.9" upper="1.9" velocity="4.147"/>
+  </joint>
+  <!-- link3 -->
+  <link name="robot_link3">
+    <visual>
+      <geometry>
+        <mesh filename="package://robot_description/meshes/visual/link3.dae"/>
+      </geometry>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://robot_description/meshes/collision/link3.stl"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <mass value="7.08"/>
+      <inertia ixx="0.3" ixy="0.0" ixz="0.0" iyy="0.3" iyz="0.0" izz="0.3"/>
+    </inertial>
+  </link>
+  <!-- joint3 -->
+  <joint name="robot_joint3" type="revolute">
+    <origin xyz="0.49999 -0.0036478 -0.1833" rpy="0 0 0" />
+    <parent link="robot_link2"/>
+    <child link="robot_link3"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="84" lower="-2.6" upper="2.6" velocity="3.665"/>
+  </joint>
+  <!-- link4 -->
+  <link name="robot_link4">
+    <visual>
+      <geometry>
+        <mesh filename="package://robot_description/meshes/visual/link4.dae"/>
+      </geometry>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://robot_description/meshes/collision/link4.stl"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <mass value="8.28"/>
+      <inertia ixx="0.3" ixy="0.0" ixz="0.0" iyy="0.3" iyz="0.0" izz="0.3"/>
+    </inertial>
+  </link>
+  <!-- joint4 -->
+  <joint name="robot_joint4" type="revolute">
+    <origin xyz="0.49997 -0.005232 -0.187" rpy="0 0 1.5707963267948966" />
+    <parent link="robot_link3"/>
+    <child link="robot_link4"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="30" lower="-2" upper="2" velocity="4.974"/>
+  </joint>
+  <!-- link5 -->
+  <link name="robot_link5">
+    <visual>
+      <geometry>
+        <mesh filename="package://robot_description/meshes/visual/link5.dae"/>
+      </geometry>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://robot_description/meshes/collision/link5.stl"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <mass value="5.4"/>
+      <inertia ixx="0.3" ixy="0.0" ixz="0.0" iyy="0.3" iyz="0.0" izz="0.3"/>
+    </inertial>
+  </link>
+  <!-- joint5 -->
+  <joint name="robot_joint5" type="revolute">
+    <origin xyz="-0.0013802 -0.13189 0" rpy="0 1.5707963267948966 0" />
+    <parent link="robot_link4"/>
+    <child link="robot_link5"/>
+    <axis xyz="0 -1 0"/>
+    <limit effort="528" lower="-1.85" upper="1.85" velocity="1.623"/>
+  </joint>
+  <!-- link6 -->
+  <link name="robot_link6">
+    <visual>
+      <geometry>
+        <mesh filename="package://robot_description/meshes/visual/link6.dae"/>
+      </geometry>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://robot_description/meshes/collision/link6.stl"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <mass value="2.0"/>
+      <inertia ixx="0.3" ixy="0.0" ixz="0.0" iyy="0.3" iyz="0.0" izz="0.3"/>
+    </inertial>
+  </link>
+  <!-- joint6 -->
+  <joint name="robot_joint6" type="revolute">
+    <origin xyz="0.13687 0.13047 0" rpy="-1.5707963267948966 0 0" />
+    <parent link="robot_link5"/>
+    <child link="robot_link6"/>
+    <axis xyz="-1 0 0"/>
+    <limit effort="84" lower="-2" upper="2" velocity="3.665"/>
+  </joint>
+  <!-- gripper -->
+  <link name="robot_gripper">
+    <visual>
+      <geometry>
+        <mesh filename="package://robot_description/meshes/visual/gripper.dae"/>
+      </geometry>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://robot_description/meshes/collision/gripper.stl"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <mass value="2.74"/>
+      <inertia ixx="0.3" ixy="0.0" ixz="0.0" iyy="0.3" iyz="0.0" izz="0.3"/>
+    </inertial>
+  </link>
+  <!-- joint7 -->
+  <joint name="robot_joint7" type="fixed">
+    <origin xyz="0.031498 0.0 0" rpy="0 1.5707963267948966 0" />
+    <parent link="robot_link6"/>
+    <child link="robot_gripper"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+  <!-- grasping frame -->
+  <link name="tcp"/>
+  <joint name="tcp_joint" type="fixed">
+    <origin rpy="0 0 0" xyz="0.1 0 0.06887"/>
+    <parent link="robot_gripper"/>
+    <child link="tcp"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+</robot>

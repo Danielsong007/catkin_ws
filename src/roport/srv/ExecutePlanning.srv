@@ -1,0 +1,14 @@
+std_msgs/Header header
+geometry_msgs/Pose pose
+string category
+---
+uint8 SUCCEEDED=0
+uint8 FAILED=1
+uint8 result_status
+float64[] pre_middle_pose
+geometry_msgs/Pose pre_pick_pose
+geometry_msgs/Pose pick_pose
+geometry_msgs/Pose post_pick_pose
+geometry_msgs/Pose post_pick_pose_edge
+float64[] post_middle_pose
+float64[] place_pose

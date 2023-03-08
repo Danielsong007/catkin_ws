@@ -1,0 +1,10 @@
+<launch>
+
+<!--    <param name="robot_description" command="$(find xacro)/xacro &#45;&#45;inorder $(find robot_description)/robots/robot_arm.urdf.xacro"/>-->
+    <param name="robot_description" textfile="$(find robot_description)/robots/robot_arm.urdf"/>
+    <param name="use_gui" value="true" />
+    <node name="joint_state_publisher_gui" pkg="joint_state_publisher_gui" type="joint_state_publisher_gui"/>
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>
+    <node pkg="rviz" type="rviz" name="rviz" args="-d $(find robot_description)/launch/robot.rviz" output="screen" required="true"/>
+
+</launch>

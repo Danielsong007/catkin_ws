@@ -1,0 +1,13 @@
+<launch>
+
+  <arg name="use_sim_time" default="false" />
+  <param name="/use_sim_time" value="$(arg use_sim_time)" />
+
+    <node name="depalletizing_helper_for_real" pkg="roport" type="depalletizing_helper_for_real.py" respawn="false" output="screen">
+      <rosparam command="load" file="$(find roport)/config/sim_helper_aubo.yaml"/>
+    </node>
+
+    <node pkg="roport" type="roport_task_scheduler" name="roport_task_scheduler" output="screen">
+        <param name="tree_file" value="$(find roport)/tree/hkcenter_depalletizing_real.xml" />
+    </node>
+</launch>

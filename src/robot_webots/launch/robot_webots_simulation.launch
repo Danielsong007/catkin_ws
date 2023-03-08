@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- start Webots -->
+  <env name="WEBOTS_HOME" value="/usr/local/webots" />
+  <arg name="no-gui" default="false," doc="Start Webots with minimal GUI"/>
+  <arg name="world" default="demo3"/>
+
+  <include file="$(find robot_webots)/launch/webots.launch">
+    <arg name="mode" value="realtime"/>
+    <arg name="no-gui" value="$(arg no-gui)"/>
+    <arg name="world" value="$(find robot_webots)/worlds/$(arg world)_world.wbt"/>
+  </include>
+
+  <arg name="prefix" default="" doc="Prefix to robot's joints' and links' names" />
+  <arg name="auto-close" default="false" doc="Startup mode"/>
+  <param name="prefix" value="$(arg prefix)" type="str" />
+  <param name="use_sim_time" value="true" type="bool" />
+
+  <!-- Webots controller -->
+  <include file="$(find robot_webots)/launch/robot_controller.launch">
+    <arg name="auto-close" value="$(arg auto-close)"/>
+  </include>
+
+</launch>
+
