@@ -28,13 +28,13 @@ t = 0
 s_open = [0x01, 0x05, 0x00, 0x00, 0xFF, 0x00, 0x8C, 0x3A]
 s_close = [0x01, 0x05, 0x00, 0x00, 0x00, 0x00, 0xCD, 0xCA]
 
-# ser = serial.Serial(
-#         port='/dev/usb_0',
-#         baudrate=9600,
-#         parity=serial.PARITY_NONE,
-#         stopbits=serial.STOPBITS_ONE,
-#         bytesize=serial.EIGHTBITS
-#         )
+ser = serial.Serial(
+        port='/dev/usb_0',
+        baudrate=9600,
+        parity=serial.PARITY_NONE,
+        stopbits=serial.STOPBITS_ONE,
+        bytesize=serial.EIGHTBITS
+        )
 
 class curi_ros_driver(robot):
     def __init__(self, config_file = 'defualt.json'):
@@ -43,8 +43,9 @@ class curi_ros_driver(robot):
             config = json.load(fpcfg)
 
         rospy.init_node('curi_ros_driver')
-        self.rate = rospy.Rate(int(1.0/config['robot'][0]['dt']))
-        self.dt = config['robot'][0]['dt']
+        self.dt = 0.05
+        self.rate = rospy.Rate(int(1.0/self.dt))
+        
         self.JointSize = config['robot'][0]['joint_size']
         
         self.joint_states = JointState()
@@ -106,7 +107,7 @@ class curi_ros_driver(robot):
         return resp
 
     def recieve_script_new(self, msg):
-        KKKK=[0,0,0,0,0,0]
+        KKKK=[0,0,0.05,0.05,0,0]
         rospy.loginfo(KKKK)
 
         self.ControlSpace = CONTROL_SPACE.CONTROL_SPACE_JOINT
@@ -232,7 +233,8 @@ class curi_ros_driver(robot):
                         #    self.JointCurVel[4] = 0.0
                         #    self.JointCurVel[5] = 0.0
                         message = self.packRobotCommand()
-                        self.socket_communication.send(message)
+
+                        # self.socket_communication.send(message)
 
                 self.pub.publish(self.joint_states)
                 self.rate.sleep()
