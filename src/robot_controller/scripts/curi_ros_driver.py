@@ -107,7 +107,7 @@ class curi_ros_driver(robot):
         return resp
 
     def recieve_script_new(self, msg):
-        KKKK=[0,0,0.05,0.05,0,0]
+        KKKK=[0,0,0,0,0,0.05]
         rospy.loginfo(KKKK)
 
         self.ControlSpace = CONTROL_SPACE.CONTROL_SPACE_JOINT
