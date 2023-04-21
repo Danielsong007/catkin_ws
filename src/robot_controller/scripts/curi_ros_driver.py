@@ -81,10 +81,11 @@ class curi_ros_driver(robot):
         return resp
 
     def recieve_script_new(self, msg):
-        GoalPos=[0.1,0,0,-90,90,-90,0] # The unit is /m,/deg; no matter Pos or Vel
+        GoalPos=msg.num # The unit is /m,/deg; no matter Pos or Vel; eg.[0.1,0,0,-90,90,-90,0]
+        # GoalPos=[-0.37,0.08,0,0,0,90,0]
         for i in range(self.JointSize): 
             if i in range(3): # Translate
-                Vel_limit=0.02
+                Vel_limit=0.04
                 Err_limit=0.003
                 print(i)
             else: # Rotate
