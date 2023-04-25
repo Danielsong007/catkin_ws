@@ -1,9 +1,0 @@
-string group_name
-string eef_name
----
-uint8 SUCCEEDED=0
-uint8 FAILED=1
-uint8 result_status
-geometry_msgs/Pose pose
-string ee_link
-string ref_link

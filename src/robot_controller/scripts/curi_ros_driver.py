@@ -6,7 +6,7 @@ from sensor_msgs.msg import JointState
 from std_srvs.srv import SetBool, SetBoolResponse
 import serial
 import struct
-from beginner_tutorials.msg import Num
+from MainNode.msg import Num
 
 import re, json, sys, time
 sys.path.append("..")
@@ -82,7 +82,7 @@ class curi_ros_driver(robot):
 
     def recieve_script_new(self, msg):
         GoalPos=msg.num # The unit is /m,/deg; no matter Pos or Vel; eg.[0.1,0,0,-90,90,-90,0]
-        # GoalPos=[-0.37,0.08,0,0,0,90,0]
+        # GoalPos=[0,0,0,-90,90,0,0] # Move to single point 
         for i in range(self.JointSize): 
             if i in range(3): # Translate
                 Vel_limit=0.04
