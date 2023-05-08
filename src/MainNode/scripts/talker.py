@@ -8,73 +8,79 @@ import actionlib, time
 from control_msgs.msg import FollowJointTrajectoryAction
 from std_srvs.srv import SetBool, SetBoolResponse
 
-def Sub_Robotstate_Handle(msg):
-    print(msg)
 
-def talker():
-    rospy.init_node('talker', anonymous=True)
-    rate = rospy.Rate(10) # 10hz
+class Talker():
+    def __init__(self):
+        rospy.init_node('talker')
+        self.rate = rospy.Rate(10)
+        self.GoalPos=Num()
+        self.JointSize=7
+        self.CurPos=[1000,0,0,0,0,0,0]
 
-    pub = rospy.Publisher('chatter', Num, queue_size=10)
-    Mymsg=Num()
-    rospy.wait_for_service('/gripper/run')
-    Gripper_Client = rospy.ServiceProxy('/gripper/run', SetBool)
-    Sub_Robotstate=rospy.Subscriber('robot/joint_states', JointState, Sub_Robotstate_Handle)
+        self.pub = rospy.Publisher('chatter', Num, queue_size=10)
+        self.Sub_Robotstate=rospy.Subscriber('robot/joint_states', JointState, self.Sub_Robotstate_Handle)
+        rospy.wait_for_service('/gripper/run')
+        self.Gripper_Client = rospy.ServiceProxy('/gripper/run', SetBool)
 
-    Mymsg.num=[-0.3,0,0,-90,90,0,0] # Go to a Point
-    print('Go to',Mymsg.num)
-    while not rospy.is_shutdown():
-        pub.publish(Mymsg)
-        rate.sleep()
+    def Sub_Robotstate_Handle(self,msg):
+        self.CurPos=msg.position
+        self.CurVelocity=msg.velocity
+        # print(self.CurPos)
     
-    # Mymsg.num=[-0.37,0.15,0,0,0,90,0] # Suck
-    # print('Go to',Mymsg.num)
-    # start_time=time.time()
-    # end_time=time.time()
-    # while(end_time-start_time <5):
-    #     pub.publish(Mymsg)
-    #     rate.sleep()
-    #     end_time=time.time()
-
-    # print('Open gripper:')
-    # Gripper_Client(1)
-    # time.sleep(2)
-
-    # Mymsg.num=[-0.37,-0.15,0.05,0,0,90,0] # Start
-    # print('Go to',Mymsg.num)
-    # start_time=time.time()
-    # end_time=time.time()
-    # while(end_time-start_time <10):
-    #     pub.publish(Mymsg)
-    #     rate.sleep()
-    #     end_time=time.time()
-
-    # Mymsg.num=[-0.2,-0.15,0.05,0,0,0,0] # End
-    # print('Go to',Mymsg.num)
-    # start_time=time.time()
-    # end_time=time.time()
-    # while(end_time-start_time <15):
-    #     pub.publish(Mymsg)
-    #     rate.sleep()
-    #     end_time=time.time()
-
-    # Mymsg.num=[-0.2,0.12,0.05,0,0,0,0] # Push
-    # print('Go to',Mymsg.num)
-    # start_time=time.time()
-    # end_time=time.time()
-    # while(end_time-start_time <10):
-    #     pub.publish(Mymsg)
-    #     rate.sleep()
-    #     end_time=time.time()
-
-    # print('Close gripper:')
-    # Gripper_Client(0)
-    # time.sleep(2)
-    # print('Bye-Bye')
-
+    def ArriveCheck(self,HighAccuracy):
+        Flag_Arrive=1 # 0 means arrived
+        if HighAccuracy == 0:
+            Err_limit_T=0.01
+            Err_limit_R=0.1
+        else:
+            Err_limit_T=0.001
+            Err_limit_R=0.01
+        for i in range(self.JointSize-1): 
+            if i in range(3): # Translate
+                if abs(self.GoalPos.num[i]-self.CurPos[i])>=Err_limit_T:
+                    Flag_Arrive=0
+            else: # Rotate
+                if abs(self.GoalPos.num[i]-self.CurPos[i])>=Err_limit_R:
+                    Flag_Arrive=0
+        return Flag_Arrive
+    
+    def GoToOnePoint(self,GoalPoint,HighAccuracy):
+        self.GoalPos.num=GoalPoint # Go to a Point
+        print('Go to',self.GoalPos)
+        while self.ArriveCheck(HighAccuracy)==0:
+            self.pub.publish(self.GoalPos)
+            # print('Go-go-go!')
+            self.rate.sleep()
+        print('It arrived:',self.GoalPos)
+        self.pub.publish(self.CurPos)
+    
+    def PickOneBox(self,BoxPose):
+        self.GoToOnePoint(BoxPose,0) # Middle Point
+        self.GoToOnePoint([0.45,0,0, 20,-20,0,0],1) # Face Point
+        self.GoToOnePoint([0.45,0.05,0, 20,-20,0,0],1) # Suck
+        print('Open gripper:')
+        # self.ripper_Client(1)
+        time.sleep(1)
+        self.GoToOnePoint([0.45,-0.05,0, 20,-20,0,0],1) # Pull
+        self.GoToOnePoint([0.45,0,0, -20,20,0,0],0) # Middle Point
+        self.GoToOnePoint([0.45,0,0, -20,-20,0,0],0) # Transmit
+        self.GoToOnePoint([0.45,0.05,0, -20,-20,0,0],1) # Push
+        self.GoToOnePoint([0.45,0,0, -20,20,0,0],0) # Middle Point
+        print('Close gripper:')
+        # self.Gripper_Client(0)
+        time.sleep(0.05)
+        print('Bye-Bye')
+    
+    def PickMultiBoxes(self):
+        self.PickOneBox([0.45,0,0, -20,20,0,0])
+        self.PickOneBox([0.45,0,0, -20,20,0,0])
 
 if __name__ == '__main__':
+    # while not rospy.is_shutdown():
     try:
-        talker()
+        MyTalker = Talker()
+        MyTalker.GoToOnePoint([0,0,0, 0,0,0,0],1) # Home
+        # MyTalker.PickOneBox()
+        # MyTalker.PickMultiBoxes()
     except rospy.ROSInterruptException:
         pass

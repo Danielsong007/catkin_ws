@@ -83,14 +83,13 @@ class curi_ros_driver(robot):
     def recieve_script_new(self, msg):
         GoalPos=msg.num # The unit is /m,/deg; no matter Pos or Vel; eg.[0.1,0,0,-90,90,-90,0]
         # GoalPos=[0,0,0,-90,90,0,0] # Move to single point 
-        for i in range(self.JointSize): 
+        for i in range(self.JointSize-1): 
             if i in range(3): # Translate
-                Vel_limit=0.04
-                Err_limit=0.003
-                print(i)
+                Vel_limit=0.05
+                Err_limit=0.001
             else: # Rotate
-                Vel_limit=10
-                Err_limit=0.3
+                Vel_limit=15
+                Err_limit=0.01
             self.JointCmdVel[i] = GoalPos[i]-self.JointCurPos[i]*180/np.pi
             if self.JointCmdVel[i] > Vel_limit:
                 self.JointCmdVel[i] = Vel_limit
@@ -98,7 +97,6 @@ class curi_ros_driver(robot):
                 self.JointCmdVel[i] = -Vel_limit
             if abs(GoalPos[i]-self.JointCurPos[i]*180/np.pi) < Err_limit:
                 self.JointCmdVel[i]=0
-            # print('Cur_Pos_Err: i=', i, GoalPos[0]-self.JointCurPos[0]*180/np.pi)
             self.JointCmdMod[i] = CONTROL_MODE.CONTROL_MODE_VELOCITY
         self.ControlSpace = CONTROL_SPACE.CONTROL_SPACE_JOINT
         self.Command = ROBOT_STATE.RUNNING_STATE_ONLINE
@@ -113,8 +111,8 @@ class curi_ros_driver(robot):
                 if data:
                     self.unpackRobotState(data.strip("b'"))
                     self.joint_states.header.stamp = rospy.Time.now()
-                    self.joint_states.position = self.JointCurPos[:]
-                    self.joint_states.velocity = self.JointCurVel[:]
+                    self.joint_states.position = self.JointCurPos[:] *180/np.pi
+                    self.joint_states.velocity = self.JointCurVel[:] *180/np.pi
                     self.joint_states.effort = self.JointCurTor[:]
                 self.pub.publish(self.joint_states)
                 self.rate.sleep()
