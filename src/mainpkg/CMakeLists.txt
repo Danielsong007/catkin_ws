@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(mainnode)
+project(mainpkg)
 
 find_package(catkin REQUIRED COMPONENTS
   roscpp
@@ -20,7 +20,7 @@ generate_messages(
 
 catkin_package(
 INCLUDE_DIRS include
-LIBRARIES mainnode
+LIBRARIES mainpkg
 CATKIN_DEPENDS message_runtime
 )
 
@@ -31,7 +31,7 @@ include_directories(
 )
 
 
-catkin_install_python(PROGRAMS scripts/talker.py scripts/listener.py
+catkin_install_python(PROGRAMS
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

@@ -6,7 +6,7 @@ from sensor_msgs.msg import JointState
 from std_srvs.srv import SetBool, SetBoolResponse
 import serial
 import struct
-from mainnode.msg import Num
+from mainpkg.msg import Num
 
 import re, json, sys, time
 sys.path.append("..")

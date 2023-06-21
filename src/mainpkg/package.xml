@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>mainnode</name>
+  <name>mainpkg</name>
   <version>0.0.0</version>
-  <description>The mainnode package</description>
+  <description>The mainpkg package</description>
   <maintainer email="mo@todo.todo">mo</maintainer>
   <license>TODO</license>
 

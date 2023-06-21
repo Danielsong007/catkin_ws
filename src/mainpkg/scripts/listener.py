@@ -2,7 +2,7 @@
 
 import rospy
 from std_msgs.msg import String
-from mainnode.msg import Num
+from mainpkg.msg import Num
 from control_msgs.msg import FollowJointTrajectoryAction
 import actionlib
 

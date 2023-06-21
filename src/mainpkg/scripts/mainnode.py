@@ -2,7 +2,7 @@
 
 import rospy
 from std_msgs.msg import String
-from mainnode.msg import Num
+from mainpkg.msg import Num
 from sensor_msgs.msg import JointState
 import actionlib, time
 from control_msgs.msg import FollowJointTrajectoryAction
@@ -12,7 +12,7 @@ import sys
 
 class Talker():
     def __init__(self):
-        rospy.init_node('talker')
+        rospy.init_node('mainpkg')
         self.rate = rospy.Rate(10)
         self.GoalPos=Num()
         self.JointSize=7
