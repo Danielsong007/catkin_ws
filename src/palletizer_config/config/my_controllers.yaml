@@ -1,0 +1,23 @@
+controller_list:
+  - name: palletizer_arm
+    action_ns: follow_joint_trajectory
+    type: FollowJointTrajectory
+    default: true
+    joints:
+      - Joint1
+      - Joint2
+      - Joint3
+      - Joint4
+      - Joint5
+  - name: palletizer_hand
+    action_ns: follow_joint_trajectory
+    type: FollowJointTrajectory
+    default: true
+    joints:
+      - Joint6
+      - Joint7
+initial:  # Define initial robot poses.
+  - group: arm
+    pose: armHome
+  - group: hand
+    pose: handHome

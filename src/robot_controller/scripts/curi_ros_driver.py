@@ -6,7 +6,7 @@ from sensor_msgs.msg import JointState
 from std_srvs.srv import SetBool, SetBoolResponse
 import serial
 import struct
-from MainNode.msg import Num
+from mainnode.msg import Num
 
 import re, json, sys, time
 sys.path.append("..")
@@ -85,12 +85,12 @@ class curi_ros_driver(robot):
         # GoalPos=[0,0,0,-90,90,0,0] # Move to single point 
         for i in range(self.JointSize-1): 
             if i in range(3): # Translate
-                Vel_limit=0.05
+                Vel_limit=0.1
                 Err_limit=0.001
             else: # Rotate
-                Vel_limit=15
+                Vel_limit=40
                 Err_limit=0.01
-            self.JointCmdVel[i] = GoalPos[i]-self.JointCurPos[i]*180/np.pi
+            self.JointCmdVel[i] = 2*(GoalPos[i]-self.JointCurPos[i]*180/np.pi)
             if self.JointCmdVel[i] > Vel_limit:
                 self.JointCmdVel[i] = Vel_limit
             elif self.JointCmdVel[i] < -Vel_limit:
@@ -98,6 +98,7 @@ class curi_ros_driver(robot):
             if abs(GoalPos[i]-self.JointCurPos[i]*180/np.pi) < Err_limit:
                 self.JointCmdVel[i]=0
             self.JointCmdMod[i] = CONTROL_MODE.CONTROL_MODE_VELOCITY
+        
         self.ControlSpace = CONTROL_SPACE.CONTROL_SPACE_JOINT
         self.Command = ROBOT_STATE.RUNNING_STATE_ONLINE
         message = self.packRobotCommand()
@@ -116,6 +117,7 @@ class curi_ros_driver(robot):
                     self.joint_states.effort = self.JointCurTor[:]
                 self.pub.publish(self.joint_states)
                 self.rate.sleep()
+                print(self.JointCurPos*180/np.pi)
             self.Command = ROBOT_STATE.RUNNING_STATE_HOLDON
             message = self.packRobotCommand()
             self.socket_communication.send(message)

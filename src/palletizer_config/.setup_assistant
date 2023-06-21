@@ -1,0 +1,11 @@
+moveit_setup_assistant_config:
+  URDF:
+    package: palletizer
+    relative_path: urdf/palletizer.urdf
+    xacro_args: ""
+  SRDF:
+    relative_path: config/palletizer.srdf
+  CONFIG:
+    author_name: sys
+    author_email: sys@qq.com
+    generated_timestamp: 1687321854
