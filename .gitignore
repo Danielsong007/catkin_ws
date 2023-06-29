@@ -3,7 +3,9 @@
 /src/Common commands/new
 /src/realsense-ros
 /src/Train_case/Qingwei_case
-/src/Train_case/FruitsNutsSeg/output
-/src/Train_case/FruitsNutsSeg/data
+/src/Train_case/sys_dl_ex/output
+/src/Train_case/sys_dl_ex/train
+/src/Train_case/sys_dl_ex/val
+
 
 
