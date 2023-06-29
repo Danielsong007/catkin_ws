@@ -1,3 +1,9 @@
-/src/Common commands/new
 /build
 /devel
+/src/Common commands/new
+/src/realsense-ros
+/src/Train_case/Qingwei_case
+/src/Train_case/FruitsNutsSeg/output
+/src/Train_case/FruitsNutsSeg/data
+
+

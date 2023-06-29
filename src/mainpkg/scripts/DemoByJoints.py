@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import rospy
 from std_msgs.msg import String
-from mainpkg.msg import Num
+from mainpkg.msg import MyGoal
 from sensor_msgs.msg import JointState
 import actionlib, time
 from control_msgs.msg import FollowJointTrajectoryAction
@@ -12,43 +12,20 @@ import sys
 class DemoByJoints():
     def __init__(self):
         self.rate = rospy.Rate(20)
-        self.GoalPos=Num()
+        self.GoalPos=MyGoal()
         self.JointSize=7
-        self.CurPos=[1000,0,0,0,0,0,0]
 
-        self.pub = rospy.Publisher('ManualPosCmd', Num, queue_size=10)
-        self.Sub_Robotstate=rospy.Subscriber('joint_states', JointState, self.Sub_Robotstate_Handle)
+        self.pub = rospy.Publisher('ManualPosCmd', MyGoal, queue_size=10)
         rospy.wait_for_service('/gripper/run')
         self.Gripper_Client = rospy.ServiceProxy('/gripper/run', SetBool)
-
-    def Sub_Robotstate_Handle(self,msg):
-        self.CurPos=msg.position
-    
-    def ArriveCheck(self,HighAccuracy):
-        Flag_Arrive=1 # 0 means arrived
-        if HighAccuracy == 0:
-            Err_limit_T=0.01
-            Err_limit_R=0.5
-        else:
-            Err_limit_T=0.001
-            Err_limit_R=0.1
-        for i in range(self.JointSize):
-            if i==0 or i==5 or i==6: # Translate
-                if abs(self.GoalPos.num[i]-self.CurPos[i])>=Err_limit_T:
-                    Flag_Arrive=0
-            else: # Rotate
-                if abs(self.GoalPos.num[i]-self.CurPos[i])>=Err_limit_R:
-                    Flag_Arrive=0
-        return Flag_Arrive
     
     def GoToOnePoint(self,GoalPoint,HighAccuracy):
-        self.GoalPos.num=GoalPoint # Go to a Point; Moveit order
-        print('Go to',self.GoalPos)
-        while not rospy.is_shutdown() and self.ArriveCheck(HighAccuracy)==0:
+        self.GoalPos.Position=GoalPoint # Moveit order
+        self.GoalPos.HighAccuracy=HighAccuracy # Moveit order
+        for i in range(3):
             self.pub.publish(self.GoalPos)
             self.rate.sleep()
-        print('It arrived:',self.GoalPos)
-        self.pub.publish(self.GoalPos)
+        print ('Published the goal')
     
     def PickOneBox(self,Height,ClosePoseI,MidPoseI,FarPoseI,D_suck):
         D_Pull=0.1
@@ -101,8 +78,8 @@ if __name__ == '__main__':
         rospy.init_node('mainpkg')
         MyDemoByJoints = DemoByJoints()
         # MyDemoByJoints.GoToOnePoint([0,0,0,0,0, 0,0],1) # Home
-        MyDemoByJoints.GoToOnePoint([0,0,0,0,0, 0,0], 1) # Test Point; 240 374.5 175
-        # MyDemoByJoints.PickMultiBoxes()
+        MyDemoByJoints.GoToOnePoint([0, 0, 0, 0, 0, 0, 0], 1) # Test Point, m and rad
+        # MyDemoByJoints.PickMultiBoxes() # !!!Need to change to rad from deg
         
     except rospy.ROSInterruptException:
         pass

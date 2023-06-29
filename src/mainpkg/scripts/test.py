@@ -1,6 +1,7 @@
 #!/usr/bin/env python
+import sys
 
-import rospy
+aa=[2,2,2]
+i=0
 
-for i in range(2):
-    print(i)
+print(i)
