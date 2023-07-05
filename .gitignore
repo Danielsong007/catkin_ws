@@ -6,6 +6,12 @@
 /src/Train_case/sys_dl_ex/output
 /src/Train_case/sys_dl_ex/train
 /src/Train_case/sys_dl_ex/val
+/src/box_node/boxdemo/data
+/src/box_node/boxdemo/segmentation/data
+/src/box_node/boxdemo/segmentation/models
+*.pyc
+
+
 
 
 
