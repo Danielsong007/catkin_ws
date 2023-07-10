@@ -25,7 +25,7 @@ def train():
     cfg.SOLVER.BASE_LR = 0.0025
     cfg.SOLVER.MAX_ITER = (2500)  # 300 iterations seems good enough, but you can certainly train longer
     cfg.MODEL.ROI_HEADS.BATCH_SIZE_PER_IMAGE = (128)  # faster, and good enough for this toy dataset
-    cfg.MODEL.ROI_HEADS.NUM_CLASSES = 2  # 2 classes (zao,jin)
+    cfg.MODEL.ROI_HEADS.NUM_CLASSES = 1  # 2 classes (zao,jin)
     os.makedirs(cfg.OUTPUT_DIR, exist_ok=True)
     trainer = DefaultTrainer(cfg)
     trainer.resume_or_load(resume=False)
@@ -36,11 +36,11 @@ def predict():
     cfg.merge_from_file(model_zoo.get_config_file("COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml"))
     cfg.MODEL.WEIGHTS = os.path.join(cfg.OUTPUT_DIR, "model_final.pth")
     cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.5   # set the testing threshold for this model
-    cfg.MODEL.ROI_HEADS.NUM_CLASSES = 2
+    cfg.MODEL.ROI_HEADS.NUM_CLASSES = 1
     cfg.DATASETS.TEST = ("mydata", )
     predictor = DefaultPredictor(cfg)
 
-    data_f = './val/10.jpg'
+    data_f = './val/12.jpg'
     im = cv2.imread(data_f)
     outputs = predictor(im)
     v = Visualizer(im[:, :, ::-1], metadata=mydata_metadata, scale=0.8, instance_mode=ColorMode.IMAGE_BW) # remove the colors of unsegmented pixels
@@ -55,7 +55,7 @@ def vis_data():
         # d=dataset_dicts[0]
         img = cv2.imread(d["file_name"])
         print(img.shape)
-        visualizer = Visualizer(img[:, :, ::-1], metadata=mydata_metadata, scale=0.5)
+        visualizer = Visualizer(img[:, :, ::-1], metadata=mydata_metadata, scale=1)
         vis = visualizer.draw_dataset_dict(d)
         img = vis.get_image()[:, :, ::-1]
         cv2.imshow('rr', img)
