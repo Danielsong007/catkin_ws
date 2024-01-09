@@ -25,13 +25,10 @@ class Realsense():
         self.aligned_depth_frame = self.aligned_frames.get_depth_frame()
         self.aligned_color_frame = self.aligned_frames.get_color_frame()
         self.img_color = np.asanyarray(self.aligned_color_frame.get_data())
-        # cv2.imwrite("/home/mo/catkin_ws/src/box_node/mydata/15.jpg",self.img_color)
         self.img_depth = np.asanyarray(self.aligned_depth_frame.get_data())
         self.depth_intrin = self.aligned_depth_frame.profile.as_video_stream_profile().intrinsics
         self.color_intrin = self.aligned_color_frame.profile.as_video_stream_profile().intrinsics
         self.depth_to_color_extrin = self.aligned_depth_frame.profile.get_extrinsics_to(self.aligned_color_frame.profile)
-
-    def get_pc(self):
         self.pc.map_to(self.aligned_color_frame)
         self.points = self.pc.calculate(self.aligned_depth_frame)
         self.vtx = np.asanyarray(self.points.get_vertices())
@@ -42,10 +39,10 @@ class Realsense():
                 temp_vtx=self.vtx[h][w][0]
                 self.reshaped_pc[h][w]=[temp_vtx[0],temp_vtx[1],temp_vtx[2]]
         self.reshaped_pc=np.array(self.reshaped_pc,dtype=np.float32)
-        print(self.reshaped_pc[self.ph][self.pw])
 
     def show_img(self):
         cv2.circle(self.img_color, (self.pw,self.ph), 8, [255,0,255], thickness=-1)
+        print(self.reshaped_pc[self.ph][self.pw])
         while True:
             cv2.imshow('RealSence',self.img_color)
             key = cv2.waitKey(1)
@@ -56,7 +53,7 @@ if __name__ == "__main__":
     try:
         myrs=Realsense()
         myrs.get_frames()
-        myrs.get_pc()
+        cv2.imwrite("/home/mo/catkin_ws/src/box_node/sysmodel/val2/16.jpg",myrs.img_color)
         myrs.show_img()
     except rospy.ROSInterruptException as e:
         print(e)

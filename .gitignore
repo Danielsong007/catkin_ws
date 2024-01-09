@@ -9,7 +9,8 @@
 /src/Train_case/sys_dl_ex/val
 /src/box_node/sysmodel/output
 /src/box_node/sysmodel/train
-/src/box_node/sysmodel/val
+/src/box_node/sysmodel/val1
+/src/box_node/sysmodel/val2
 /src/box_node/sysmodel/ccjson
 
 

@@ -40,7 +40,7 @@ def predict():
     cfg.DATASETS.TEST = ("mydata", )
     predictor = DefaultPredictor(cfg)
 
-    data_f = './val/12.jpg'
+    data_f = './val2/16.jpg'
     im = cv2.imread(data_f)
     outputs = predictor(im)
     v = Visualizer(im[:, :, ::-1], metadata=mydata_metadata, scale=0.8, instance_mode=ColorMode.IMAGE_BW) # remove the colors of unsegmented pixels

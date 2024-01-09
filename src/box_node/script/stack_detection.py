@@ -44,7 +44,6 @@ def detect_with_view_DL(pts, gray_img):
             return False, []
         else:
             grasp_plane_ids = grasp_selection(masked_pc_filter_list)
-            print(grasp_plane_ids)
             pose_list = []
             if (len(grasp_plane_ids) != 0):
                 for i in range(len(grasp_plane_ids)):

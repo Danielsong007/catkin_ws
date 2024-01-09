@@ -32,14 +32,20 @@ class curi_ros_driver(robot):
         self.JointSize = 7
         self.rate = rospy.Rate(20)
         self.HighAccuracy=1
+        self.GoalPos=[0]*self.JointSize
+        self.joint_states = JointState()
+        self.joint_states.header = Header()
+        self.joint_states.name = ["Joint1", "Joint2", "Joint3", "Joint4", "Joint5", "Joint6", "Joint7"]
         robot.__init__(self, self.JointSize, np.array([0.0] * self.JointSize))
         self.socket_communication = curi_communication_socket(self.JointSize, "192.168.0.1", 11230, "192.168.0.34", 11231)
+        self.socket_communication.open()
 
         self.pub = rospy.Publisher('joint_states', JointState, queue_size=5)
         self.sub_new=rospy.Subscriber('ManualPosCmd', MyGoal, self.ManualPosCmd_handle)
         self.gripper_srv_ = rospy.Service('/gripper/run', SetBool, self.gripper_handle)
 
         self.armserver = actionlib.ActionServer("palletizer_arm/follow_joint_trajectory", FollowJointTrajectoryAction, self.on_goal_arm, self.on_cancel_arm, auto_start=True)
+        self.handserver = actionlib.ActionServer("palletizer_hand/follow_joint_trajectory", FollowJointTrajectoryAction, self.on_goal_hand, self.on_cancel_hand, auto_start=True)
 
     def gripper_handle(self,req):
         resp = SetBoolResponse()
@@ -56,7 +62,7 @@ class curi_ros_driver(robot):
         return resp
     
     def ArriveCheck(self):
-        Flag_Arrive=1 # 0 means arrived
+        Flag_Arrive=1 # 1 means arrived
         if self.HighAccuracy == 0:
             Err_limit_T=0.005
             Err_limit_R=0.01
@@ -73,83 +79,81 @@ class curi_ros_driver(robot):
         return Flag_Arrive
 
     def SendPosCmd(self):
-        for i in range(self.JointSize):
-            if i==0 or i==5 or i==6: # Translate
-                Vel_limit=0.1
-            else: # Rotate
-                Vel_limit=0.7
-            self.JointCmdVel[i] = 2*(self.GoalPos[i]-self.joint_states.position[i])
-            if self.JointCmdVel[i] > Vel_limit:
-                self.JointCmdVel[i] = Vel_limit
-            elif self.JointCmdVel[i] < -Vel_limit:
-                self.JointCmdVel[i] = -Vel_limit
-            self.JointCmdMod[i] = CONTROL_MODE.CONTROL_MODE_VELOCITY
-        vel=self.JointCmdVel # Moveit order
-        self.JointCmdVel=[vel[0],vel[5],vel[6],vel[1]*180/np.pi,vel[2]*180/np.pi,vel[3]*180/np.pi,vel[4]*180/np.pi] # Low machine order
-        self.ControlSpace = CONTROL_SPACE.CONTROL_SPACE_JOINT
-        self.Command = ROBOT_STATE.RUNNING_STATE_ONLINE
-        message = self.packRobotCommand()
-        self.socket_communication.send(message)
-
+        if self.ArriveCheck()==1:
+            self.JointCmdVel=[0,0,0,0,0,0,0]
+            message = self.packRobotCommand()
+            self.socket_communication.send(message)
+        else:
+            print('It has not arrived!')
+            for i in range(self.JointSize):
+                if i==0 or i==5 or i==6: # Translate
+                    Vel_limit=0.1
+                else: # Rotate
+                    Vel_limit=0.7
+                self.JointCmdVel[i] = 2*(self.GoalPos[i]-self.joint_states.position[i])
+                if self.JointCmdVel[i] > Vel_limit:
+                    self.JointCmdVel[i] = Vel_limit
+                elif self.JointCmdVel[i] < -Vel_limit:
+                    self.JointCmdVel[i] = -Vel_limit
+                self.JointCmdMod[i] = CONTROL_MODE.CONTROL_MODE_VELOCITY
+            vel=self.JointCmdVel # Moveit order
+            self.JointCmdVel=[vel[0],vel[5],vel[6],vel[1]*180/np.pi,vel[2]*180/np.pi,vel[3]*180/np.pi,vel[4]*180/np.pi] # Low machine order
+            self.ControlSpace = CONTROL_SPACE.CONTROL_SPACE_JOINT
+            self.Command = ROBOT_STATE.RUNNING_STATE_ONLINE
+            message = self.packRobotCommand()
+            self.socket_communication.send(message)
+    
     def ManualPosCmd_handle(self, msg): # The unit is m,rad
-        self.GoalPos=msg.Position
+        print('Manual mode')
+        tempP=msg.Position
+        self.GoalPos=[tempP[0],tempP[1],tempP[2],tempP[3],tempP[4],tempP[5],tempP[6]]
         self.HighAccuracy=msg.HighAccuracy
-        while not rospy.is_shutdown() and self.ArriveCheck()==0:
-            self.SendPosCmd()
-            self.rate.sleep()
-        self.JointCmdVel=[0,0,0,0,0,0,0]
-        message = self.packRobotCommand()
-        self.socket_communication.send(message)
-        print('Arrived success by Manual Cmd')
         
     def on_goal_arm(self, goal_handle): # Moveit setting: 240 374.5 175
+        print('Arm: on goal')
         goal_handle.set_accepted()
         goal_handle.set_succeeded()
         for i in range(len(goal_handle.get_goal().trajectory.points)):
-            TempP=goal_handle.get_goal().trajectory.points[i].positions
-            self.GoalPos=[TempP[0],TempP[1],TempP[2],TempP[3],TempP[4],self.joint_states.position[5],self.joint_states.position[6]]
-            cur_time=time.time()
-            while self.ArriveCheck()==0 and time.time()-cur_time<0.2:
-                self.SendPosCmd()
-                self.rate.sleep()
-        while self.ArriveCheck()==0:
-            self.SendPosCmd()
-            self.rate.sleep()
-        self.JointCmdVel=[0,0,0,0,0,0,0]
-        message = self.packRobotCommand()
-        self.socket_communication.send(message)
-        print('Arrived success by Moveit')
-
+            self.GoalPos[0:5]=goal_handle.get_goal().trajectory.points[i].positions
+            time.sleep(0.2)
+    
+    def on_goal_hand(self, goal_handle):
+        print('Hand: on goal')
+        goal_handle.set_accepted()
+        goal_handle.set_succeeded()
+        for i in range(len(goal_handle.get_goal().trajectory.points)):
+            self.GoalPos[5:7]=goal_handle.get_goal().trajectory.points[i].positions
+            time.sleep(0.2)
+    
     def on_cancel_arm(self, goal_handle):
-        print('ON cancel')
+        print('Arm: on cancel')
+
+    def on_cancel_hand(self, goal_handle):
+        print('Hand: on cancel')
     
     def pub_joint_states(self):
-            self.socket_communication.open()
-            self.joint_states = JointState()
-            self.joint_states.header = Header()
-            self.joint_states.name = ["Joint1", "Joint2", "Joint3", "Joint4", "Joint5", "Joint6", "Joint7"]
-            while not rospy.is_shutdown():
-                data = self.socket_communication.recieve(flag=1)
-                if data:
-                    self.unpackRobotState(data.strip("b'")) 
-                    pos = self.JointCurPos[:] # Low machine order
-                    self.joint_states.position = [pos[0]*180/np.pi,pos[3],pos[4],pos[5],pos[6],pos[1]*180/np.pi,pos[2]*180/np.pi] # Moveit order
-                    vel = self.JointCurVel[:]
-                    self.joint_states.velocity = [vel[0],vel[3],vel[4],vel[5],vel[6],vel[1],vel[2]]
-                    eff = self.JointCurTor[:]
-                    self.joint_states.effort   = [eff[0],eff[3],eff[4],eff[5],eff[6],eff[1],eff[2]]
-                self.joint_states.header.stamp = rospy.Time.now()
-                self.pub.publish(self.joint_states)
-                self.rate.sleep()
-            self.Command = ROBOT_STATE.RUNNING_STATE_HOLDON
-            message = self.packRobotCommand()
-            self.socket_communication.send(message)
-            self.socket_communication.close()
+        data = self.socket_communication.recieve(flag=1)
+        if data:
+            self.unpackRobotState(data.strip("b'")) 
+            pos = self.JointCurPos[:] # Low machine order
+            self.joint_states.position = [pos[0]*180/np.pi,pos[3],pos[4],pos[5],pos[6],pos[1]*180/np.pi,pos[2]*180/np.pi] # Moveit order
+            vel = self.JointCurVel[:]
+            self.joint_states.velocity = [vel[0],vel[3],vel[4],vel[5],vel[6],vel[1],vel[2]]
+            eff = self.JointCurTor[:]
+            self.joint_states.effort   = [eff[0],eff[3],eff[4],eff[5],eff[6],eff[1],eff[2]]
+        self.joint_states.header.stamp = rospy.Time.now()
+        self.pub.publish(self.joint_states)
     
 if __name__ == '__main__':
     try:
         rospy.init_node('curi_ros_driver')
         myclass = curi_ros_driver()
-        myclass.pub_joint_states()
+        while not rospy.is_shutdown():
+            myclass.pub_joint_states()
+            myclass.SendPosCmd()
+            myclass.rate.sleep()
     except rospy.ROSInterruptException:
-        pass
+        myclass.Command = ROBOT_STATE.RUNNING_STATE_HOLDON
+        message = myclass.packRobotCommand()
+        myclass.socket_communication.send(message)
+        myclass.socket_communication.close()
