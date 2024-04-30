@@ -29,9 +29,9 @@ if __name__ == '__main__':
         rospy.init_node('mainpkg')
         MyDemoByMoveit = DemoByMoveit()
         my_move_group=my_move_group.my_move_group()
-        # MyDemoByMoveit.GoToOnePoint([0,0,0,0,0, 0,0], 1) # Home, m and rad
+        MyDemoByMoveit.GoToOnePoint([0,0,0,0,0, -0.05,0], 1) # Home, m and rad
         # my_move_group.go_to_pose_goal(0,0,0,1,0.5,0.56,0.4)
-        my_move_group.go_to_joint_state(0,0,0,0,0) # Home, m and rad
+        # my_move_group.go_to_joint_state(0,0,0,0,0) # Home, m and rad
         
     except rospy.ROSInterruptException:
         pass

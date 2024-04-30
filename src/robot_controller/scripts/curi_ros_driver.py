@@ -19,13 +19,7 @@ from control_msgs.msg import FollowJointTrajectoryAction
 
 s_open = [0x01, 0x05, 0x00, 0x00, 0xFF, 0x00, 0x8C, 0x3A]
 s_close = [0x01, 0x05, 0x00, 0x00, 0x00, 0x00, 0xCD, 0xCA]
-ser = serial.Serial(
-        port='/dev/usb_0',
-        baudrate=9600,
-        parity=serial.PARITY_NONE,
-        stopbits=serial.STOPBITS_ONE,
-        bytesize=serial.EIGHTBITS
-        )
+# ser = serial.Serial(port='/dev/usb_0', baudrate=9600, parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE, bytesize=serial.EIGHTBITS)
 
 class curi_ros_driver(robot):
     def __init__(self):

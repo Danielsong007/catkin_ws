@@ -6,26 +6,50 @@ from sensor_msgs.msg import JointState
 import actionlib, time
 from control_msgs.msg import FollowJointTrajectoryAction
 from std_srvs.srv import SetBool, SetBoolResponse
-import sys
+import sys, math
+import matplotlib.pyplot as plt
+
 
 
 class DemoByJoints():
     def __init__(self):
-        self.rate = rospy.Rate(20)
+        self.rate = rospy.Rate(200)
         self.GoalPos=MyGoal()
         self.JointSize=7
+        self.LM1Torque=0
+        self.JointT=[0,0,0,0,0,0,0]
+        self.JointP=[0,0,0,0,0,0,0]
+        self.Tlist=[0,0,0,0,0,0]
+        self.TAverage=0
 
         self.pub = rospy.Publisher('ManualPosCmd', MyGoal, queue_size=10)
+        rospy.Subscriber('joint_states', JointState, self.JSCallback)
         rospy.wait_for_service('/gripper/run')
         self.Gripper_Client = rospy.ServiceProxy('/gripper/run', SetBool)
+
+    def JSCallback(self,msg):
+        self.JointP=msg.position
+        self.JointT=msg.effort
+        self.LM1Torque=self.JointT[5]
+
+        self.Tlist[5]=self.Tlist[4]
+        self.Tlist[4]=self.Tlist[3]
+        self.Tlist[3]=self.Tlist[2]
+        self.Tlist[2]=self.Tlist[1]
+        self.Tlist[1]=self.Tlist[0]
+        self.Tlist[0]=self.LM1Torque
+        self.TAverage=(self.Tlist[0]+self.Tlist[1]+self.Tlist[2]+self.Tlist[3]+self.Tlist[4]+self.Tlist[5])/6
+        # print(self.Tlist,self.TAverage)
+        # print(self.JointT)
     
     def GoToOnePoint(self,GoalPoint,HighAccuracy):
         self.GoalPos.Position=GoalPoint # Moveit order
         self.GoalPos.HighAccuracy=HighAccuracy # Moveit order
-        for i in range(3):
+        for i in range(20):
             self.pub.publish(self.GoalPos)
-            self.rate.sleep()
-        print ('Published the goal')
+            # self.rate.sleep()
+            time.sleep(0.005)
+
     
     def PickOneBox(self,Height,ClosePoseI,MidPoseI,FarPoseI,D_suck):
         D_Pull=0.1
@@ -61,7 +85,6 @@ class DemoByJoints():
         ClosePose3=[0,45,-90,45,0, 0,0]
         MidPose3=[0,28,-70,43,0, 0,0]
         FarPose3=[0,10,-50,40,0, 0,0]
-
         self.PickOneBox(Height[0],ClosePose1,MidPose1,FarPose1,0.26) # Up1
         self.PickOneBox(Height[0],ClosePose2,MidPose2,FarPose2,0.255) # Up2
         self.PickOneBox(Height[0],ClosePose3,MidPose3,FarPose3,0.265) # Up3
@@ -72,14 +95,108 @@ class DemoByJoints():
         self.PickOneBox(Height[2],ClosePose2,MidPose2,FarPose2,0.23) # Down2
         self.PickOneBox(Height[2],ClosePose3,MidPose3,FarPose3,0.245) # Down3
     
+    def PickWithC(self):
+        print('Suck')
+        self.GoToOnePoint([0,0,0,0,0, 0.15,0], 1)
+        while self.TAverage<110:
+            rospy.sleep(0.01)
+        self.GoToOnePoint([0,0,0,0,0, self.JointP[5],0], 1)
+        time.sleep(1)
+        print ('Lift')
+        self.GoToOnePoint([0,0,0,0,0, self.JointP[5],0.12], 1)
+        time.sleep(2.5)
+        print ('pull')
+        self.GoToOnePoint([0,0,0,0,0, -0.05,0.12], 1)
+        time.sleep(2.5)
+        print ('Down')
+        self.GoToOnePoint([0,0,0,0,0, -0.08,0], 1)
+        time.sleep(1)
+    
+    def PickWithC_TO(self):
+        print('Suck')
+        time.sleep(5)
+        self.GoToOnePoint([0,0,0,0,0, 0.2,0], 1)
+        now=time.time()
+        while self.TAverage<110 and (time.time()-now)<6:
+            rospy.sleep(0.01)
+        print ('Lift')
+        self.GoToOnePoint([0,0,0,0,0, self.JointP[5]-0.01,0.09], 1)
+        time.sleep(2.5)
+        print ('pull')
+        self.GoToOnePoint([0,0,0,0,0, -0.1,0.09], 1)
+        time.sleep(2)
+        print ('Down')
+        self.GoToOnePoint([0,0,0,0,0, -0.19,0.03], 1)
+        time.sleep(3)
+
+    def DirectPick(self):
+        print('Suck')
+        time.sleep(5)
+        self.GoToOnePoint([0,0,0,0,0, 0.3,0], 1)
+        now=time.time()
+        while self.TAverage<90 and (time.time()-now)<10:
+            rospy.sleep(0.01)
+        print ('Pull')
+        self.GoToOnePoint([0,0,0,0,0, -0.19,0], 1)
+
+    def transport(self):
+        print ('Up')
+        self.GoToOnePoint([0.8,0,0,0,0, -0.24,0.15], 1)
+        time.sleep(7)
+        print ('Forward')
+        self.GoToOnePoint([0.8,-0.8,0.4,0.4,0, -0.24,0.15], 1)
+        time.sleep(3)
+        print ('Push')
+        self.GoToOnePoint([0.8,-0.8,0.4,0.4,0, 0.08,0.15], 1)
+        time.sleep(3)
+    
+    def Cyclemotion(self):
+        time.sleep(10)
+        dt_list=[]
+        JointP_list=[]
+        JointT_list=[]
+        now=time.time()
+        dt=0
+        while dt < 30:
+            A=0.3 # J1 0.6/2; J2/3
+            b=0 # J1 A; J2/3 0
+            omega=2*math.pi/10
+            JP=A*math.sin(omega*dt)+b
+            self.GoToOnePoint([0,JP,0,0,0, 0,0], 1)
+            dt=time.time()-now
+            dt_list.append(dt)
+            JointP_list.append(self.JointP[1])
+            JointT_list.append(self.JointT[1])
+        f=open('test.txt','w')
+        f.write(str(dt_list))
+        f.write('\n')
+        f.write(str(JointP_list))
+        f.write('\n')
+        f.write(str(JointT_list))
+        f.close
+        plt.subplot(1,2,1)
+        plt.plot(dt_list,JointP_list)
+        plt.subplot(1,2,2)
+        plt.plot(dt_list,JointT_list)
+        plt.show()
+    
 if __name__ == '__main__':
     try:
         print("Start")
         rospy.init_node('mainpkg')
-        MyDemoByJoints = DemoByJoints()
-        # MyDemoByJoints.GoToOnePoint([0,0,0,0,0, 0,0],1) # Home
-        MyDemoByJoints.GoToOnePoint([0, 0, 0, 0, 0, 0, 0], 1) # Test Point, m and rad
-        # MyDemoByJoints.PickMultiBoxes() # !!!Need to change to rad from deg
+        mydemo = DemoByJoints()
+
+        # mydemo.GoToOnePoint([0,0,0,0,0, 0,0], 1)
+        # mydemo.GoToOnePoint([0.8,-0.8,0.4,0.4,0, -0.24,0.15], 1)
+        # mydemo.GoToOnePoint([0,0,0,0,0, 0,0], 1) # Home
+        # mydemo.GoToOnePoint([1.4,1.56,-3.14,0,0, 0,0], 1) # Test Point, m and rad
+        # mydemo.PickMultiBoxes() # !!!Need to change to rad from deg
+        # mydemo.PickWithC()
+        mydemo.PickWithC_TO()
+        # mydemo.transport()
+        # mydemo.Cyclemotion()
+        # mydemo.DirectPick()
+        # rospy.spin() # spin() simply keeps python from exiting until this node is stopped
         
     except rospy.ROSInterruptException:
         pass
