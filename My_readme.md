@@ -16,4 +16,6 @@ get PointCloud: https://blog.csdn.net/gyxx1998/article/details/121611001
 # Bug of send_data_to_box_node
 change to: ros_msg.data = b"".join(buffer)
 
-
+# Moveit+Camera
+- Moveit assistant setup + publish the tf between 'baselink' and 'camera'
+rosrun tf2_ros static_transform_publisher 0 0 0 0 0 0 1 base_link camera_link
