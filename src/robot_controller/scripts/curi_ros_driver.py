@@ -26,6 +26,8 @@ class curi_ros_driver(robot):
         self.JointSize = 7
         self.rate = rospy.Rate(20)
         self.HighAccuracy=1
+        self.JfiveV=0
+        self.JsixV=0
         self.GoalPos=[0]*self.JointSize
         self.joint_states = JointState()
         self.joint_states.header = Header()
@@ -80,8 +82,12 @@ class curi_ros_driver(robot):
         else:
             print('It has not arrived!')
             for i in range(self.JointSize):
-                if i==0 or i==5 or i==6: # Translate
+                if i==0: # Translate
                     Vel_limit=0.1
+                elif i==5: # Translate
+                    Vel_limit=self.JfiveV
+                elif i==6: # Translate
+                    Vel_limit=self.JsixV
                 else: # Rotate
                     Vel_limit=0.7
                 self.JointCmdVel[i] = 2*(self.GoalPos[i]-self.joint_states.position[i])
@@ -102,6 +108,8 @@ class curi_ros_driver(robot):
         tempP=msg.Position
         self.GoalPos=[tempP[0],tempP[1],tempP[2],tempP[3],tempP[4],tempP[5],tempP[6]]
         self.HighAccuracy=msg.HighAccuracy
+        self.JsixV=msg.JsixV
+        self.JfiveV=msg.JfiveV
         
     def on_goal_arm(self, goal_handle): # Moveit setting: 240 374.5 175
         print('Arm: on goal')
